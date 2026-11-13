@@ -49,9 +49,9 @@ const services = [
 ];
 
 const team = [
-  { name: "Dr. Amina Njoroge", role: "General dentist", note: "A calm, collaborative approach to everyday dental care.", image: "photo-1559839734-2b71ea197ec2" },
-  { name: "Dr. David Mwangi", role: "Restorative dentist", note: "Helping patients understand their options, one step at a time.", image: "photo-1612349317150-e413f6a5b16d" },
-  { name: "Dr. Wanjiku Otieno", role: "Children's dentist", note: "Making early dental visits feel a little more familiar.", image: "photo-1594824476967-48c8b964273f" }
+  { name: "Dr. Sophie Bennett", role: "General dentist", note: "A calm, collaborative approach to everyday dental care.", image: "photo-1559839734-2b71ea197ec2" },
+  { name: "Dr. Liam Parker", role: "Restorative dentist", note: "Helping patients understand their options, one step at a time.", image: "photo-1612349317150-e413f6a5b16d" },
+  { name: "Dr. Emily Wilson", role: "Children's dentist", note: "Making early dental visits feel a little more familiar.", image: "photo-1594824476967-48c8b964273f" }
 ];
 
 const articles = [
@@ -71,12 +71,13 @@ const demoAppointments = [
 ];
 
 const demoStaff = [
-  { id: "STAFF-001", name: "Clinician A", role: "General dentist", branch: "Perth City", shift: "08:00–16:00", status: "On shift" },
-  { id: "STAFF-002", name: "Clinician B", role: "Restorative dentist", branch: "Subiaco", shift: "09:00–17:00", status: "On shift" },
-  { id: "STAFF-003", name: "Clinician C", role: "Children's dentist", branch: "South Perth", shift: "09:00–15:00", status: "Off shift" },
-  { id: "STAFF-004", name: "Coordinator A", role: "Practice coordinator", branch: "Perth City", shift: "08:00–16:00", status: "On shift" },
-  { id: "STAFF-005", name: "Assistant A", role: "Dental assistant", branch: "Subiaco", shift: "10:00–18:00", status: "On leave" }
+  { id: "STAFF-001", name: "Dr. Sophie Bennett", role: "General dentist", branch: "Perth City", shift: "08:00–16:00", status: "On shift" },
+  { id: "STAFF-002", name: "Dr. Liam Parker", role: "Restorative dentist", branch: "Subiaco", shift: "09:00–17:00", status: "On shift" },
+  { id: "STAFF-003", name: "Dr. Emily Wilson", role: "Children's dentist", branch: "South Perth", shift: "09:00–15:00", status: "Off shift" },
+  { id: "STAFF-004", name: "Olivia Hart", role: "Practice coordinator", branch: "Perth City", shift: "08:00–16:00", status: "On shift" },
+  { id: "STAFF-005", name: "Jack Turner", role: "Dental assistant", branch: "Subiaco", shift: "10:00–18:00", status: "On leave" }
 ];
+const additionalDemoStaffNames = ["Alex Morgan", "Sam Mitchell", "Taylor Brooks", "Jordan Campbell", "Casey Walker"];
 
 const demoFinance = {
   month: {
@@ -155,7 +156,7 @@ function serviceCard(item, index = 0) {
 function branchCard(branch) {
   return `<article class="branch-card">
     <a class="branch-image-link" href="${branchHref(branch.slug)}" aria-label="Explore the ${branch.name} clinic">${image(branch.image, `Illustrative image for the ${branch.name} clinic`) }<span class="image-label">${branch.label}</span></a>
-    <div class="branch-card-body"><div class="branch-title"><span class="branch-pin" aria-hidden="true">⌖</span><h3>${branch.name}</h3></div><p class="branch-neighborhood">${branch.neighborhood}</p><p class="branch-address">${branch.address}</p><p class="branch-hours">${branch.hours}</p><div class="branch-links"><a href="${branchHref(branch.slug)}">Clinic details ${arrow}</a><a href="${branch.map}" target="_blank" rel="noreferrer">Directions ↗</a></div></div>
+    <div class="branch-card-body"><div class="branch-title"><span class="branch-pin" aria-hidden="true">⌖</span><h3>${branch.name}</h3></div><p class="branch-neighborhood">${branch.neighborhood}</p><p class="branch-address">${branch.address}</p><p class="branch-hours">${branch.hours}</p><div class="branch-links"><a href="${branchHref(branch.slug)}">Clinic details ${arrow}</a><a href="${branch.map}" target="_blank" rel="noopener noreferrer">Directions ↗</a></div></div>
   </article>`;
 }
 
@@ -250,14 +251,14 @@ function clinicsPage() {
 function clinicPage(slug) {
   const branch = branches.find(location => location.slug === slug);
   if (!branch) return notFound();
-  return `<section class="branch-detail-hero"><div class="branch-detail-copy"><div class="breadcrumbs"><a href="#/">Home</a><span>/</span><a href="#/clinics">Our clinics</a><span>/</span><span>${branch.name}</span></div><span class="eyebrow"><span class="eyebrow-dot"></span>${branch.neighborhood}</span><h1>Your Baobab, <em>in ${branch.name}.</em></h1><p>A welcoming place to ask questions, get thoughtful care and feel a little more at home.</p><a class="button button-dark" href="${branch.map}" target="_blank" rel="noreferrer">Get directions ${arrow}</a></div><div class="branch-detail-photo">${image(branch.image, `The ${branch.name} clinic interior`, "", 1500)}<span class="image-caption">${branch.label}</span></div></section>
-    <section class="section clinic-details-layout"><div><span class="eyebrow">Come say hello</span><h2>We'd love to <em>see you.</em></h2><p>Our clinic team is here to help you with the details and find a time that suits.</p><button class="button button-dark" data-book type="button">Preview booking ${arrow}</button></div><div class="clinic-info-cards"><article><span>⌖</span><h3>Find us</h3><p>${branch.address}</p><a href="${branch.map}" target="_blank" rel="noreferrer">Open directions ↗</a></article><article><span>◷</span><h3>Opening hours</h3><p>${branch.hours}</p><small>Hours are illustrative for demo only.</small></article><article><span>✆</span><h3>Give us a call</h3><p>${branch.phone}</p><a href="tel:${branch.phone.replaceAll(" ", "")}">Call this clinic ↗</a></article></div></section>
+  return `<section class="branch-detail-hero"><div class="branch-detail-copy"><div class="breadcrumbs"><a href="#/">Home</a><span>/</span><a href="#/clinics">Our clinics</a><span>/</span><span>${branch.name}</span></div><span class="eyebrow"><span class="eyebrow-dot"></span>${branch.neighborhood}</span><h1>Your Baobab, <em>in ${branch.name}.</em></h1><p>A welcoming place to ask questions, get thoughtful care and feel a little more at home.</p><a class="button button-dark" href="${branch.map}" target="_blank" rel="noopener noreferrer">Get directions ${arrow}</a></div><div class="branch-detail-photo">${image(branch.image, `The ${branch.name} clinic interior`, "", 1500)}<span class="image-caption">${branch.label}</span></div></section>
+    <section class="section clinic-details-layout"><div><span class="eyebrow">Come say hello</span><h2>We'd love to <em>see you.</em></h2><p>Our clinic team is here to help you with the details and find a time that suits.</p><button class="button button-dark" data-book type="button">Preview booking ${arrow}</button></div><div class="clinic-info-cards"><article><span>⌖</span><h3>Find us</h3><p>${branch.address}</p><a href="${branch.map}" target="_blank" rel="noopener noreferrer">Open directions ↗</a></article><article><span>◷</span><h3>Opening hours</h3><p>${branch.hours}</p><small>Hours are illustrative for demo only.</small></article><article><span>✆</span><h3>Give us a call</h3><p>${branch.phone}</p><a href="tel:${branch.phone.replaceAll(" ", "")}">Call this clinic ↗</a></article></div></section>
     <section class="section branch-services">${sectionHeading("Here for all the little things", "Care that fits <em>real life.</em>", "Our team can help you navigate a wide range of everyday and specialist dental care.")}<div class="service-grid">${services.slice(0, 3).map((item, index) => serviceCard(item, index)).join("")}</div><a class="text-link" href="#/services">Explore all treatments ${arrow}</a></section>${ctaBand("A good visit starts with a hello.", `Our ${branch.name} team is ready when you are.`)}`;
 }
 
 function teamPage() {
   return `${pageHero("Our people", "Meet the people behind <em>your care.</em>", "Good dentistry is a team effort. Meet a few of the friendly faces who make space for your questions.", "photo-1629909613654-28e377c37b09")}
-    <section class="section team-section">${sectionHeading("A little more about us", "People first. <em>Always.</em>", "Profiles and credentials on this page are illustrative placeholders for this demo. Verify clinician details before publishing.")}<div class="team-grid">${team.map(person => `<article class="team-card">${image(person.image, `Demo profile portrait for ${person.name}`, "", 800)}<div class="team-card-copy"><span class="card-kicker">${person.role}</span><h3>${person.name}</h3><p>${person.note}</p><span class="team-placeholder">Demo profile · Qualifications to be verified</span></div></article>`).join("")}</div></section>
+    <section class="section team-section">${sectionHeading("A little more about us", "People first. <em>Always.</em>", "Names and credentials are fictional placeholders; they do not represent actual clinicians or imply First Nations identity. Verify all details before publishing.")}<div class="team-grid">${team.map(person => `<article class="team-card">${image(person.image, `Demo profile portrait for ${person.name}`, "", 800)}<div class="team-card-copy"><span class="card-kicker">${person.role}</span><h3>${person.name}</h3><p>${person.note}</p><span class="team-placeholder">Demo profile · Qualifications to be verified</span></div></article>`).join("")}</div></section>
     <section class="section team-values">${sectionHeading("What you can expect", "Time, clarity, <em>kindness.</em>")}<div class="value-grid"><article><span>01</span><h3>We listen first.</h3><p>Your priorities matter. We start by understanding what's important to you.</p></article><article><span>02</span><h3>We explain clearly.</h3><p>You'll have time to understand your options before choosing a next step.</p></article><article><span>03</span><h3>We go at your pace.</h3><p>Good care should work for your life, not the other way around.</p></article></div></section>${ctaBand("A friendly face is just around the corner.", "Find a clinic and start with a conversation.")}`;
 }
 
@@ -300,8 +301,8 @@ function articlePage(slug) {
 
 function contactPage() {
   return `${pageHero("Contact", "We're here to <em>make it easy.</em>", "Find a clinic, give us a call or send a quick WhatsApp. We'd be happy to help you take the next step.", "photo-1629909613654-28e377c37b09")}
-    <section class="section contact-page"><div class="contact-intro"><span class="eyebrow">Say hello</span><h2>One conversation can <em>change everything.</em></h2><p>Our friendly team can help with clinic details, appointment questions and what to expect on your first visit.</p><a class="contact-phone" href="tel:+61800000000">+61 8 0000 0000 ${arrow}</a><span class="contact-demo-note">Illustrative contact number for demo only</span><a class="button button-dark" href="https://wa.me/?text=Hello%20Baobab%20Dental%20-%20this%20is%20a%20demo%20enquiry" target="_blank" rel="noreferrer">Message on WhatsApp ${arrow}</a></div>
-      <div class="contact-clinics">${branches.map(branch => `<article><div><span class="branch-pin">⌖</span><h3>${branch.name}</h3></div><p>${branch.address}</p><p>${branch.hours}</p><div><a href="${branchHref(branch.slug)}">Clinic details ↗</a><a href="${branch.map}" target="_blank" rel="noreferrer">Directions ↗</a></div></article>`).join("")}</div>
+    <section class="section contact-page"><div class="contact-intro"><span class="eyebrow">Say hello</span><h2>One conversation can <em>change everything.</em></h2><p>Our friendly team can help with clinic details, appointment questions and what to expect on your first visit.</p><a class="contact-phone" href="tel:+61800000000">+61 8 0000 0000 ${arrow}</a><span class="contact-demo-note">Illustrative contact number for demo only</span><a class="button button-dark" href="https://wa.me/?text=Hello%20Baobab%20Dental%20-%20this%20is%20a%20demo%20enquiry" target="_blank" rel="noopener noreferrer">Message on WhatsApp ${arrow}</a></div>
+      <div class="contact-clinics">${branches.map(branch => `<article><div><span class="branch-pin">⌖</span><h3>${branch.name}</h3></div><p>${branch.address}</p><p>${branch.hours}</p><div><a href="${branchHref(branch.slug)}">Clinic details ↗</a><a href="${branch.map}" target="_blank" rel="noopener noreferrer">Directions ↗</a></div></article>`).join("")}</div>
     </section><section class="contact-emergency"><div><span class="eyebrow">Need help sooner?</span><h2>For a dental emergency, <em>call your nearest clinic.</em></h2><p>We'll help you understand what to do next and check current availability.</p></div><a class="button button-dark" href="tel:+61800000000">Call now ${arrow}</a></section>${ctaBand("We look forward to meeting you.", "Find your clinic and we'll take it from there.")}`;
 }
 
@@ -546,7 +547,7 @@ function render() {
   else if (parts[0] === "admin") main.innerHTML = adminPage();
   else if (["privacy", "terms", "cookies"].includes(parts[0])) main.innerHTML = legalPage(parts[0]);
   else main.innerHTML = notFound();
-  document.title = pageTitle(parts);
+  updateHeadMeta(parts);
   document.body.classList.toggle("admin-view", parts[0] === "admin");
   setMenuExpanded(false);
   window.scrollTo(0, 0);
@@ -566,8 +567,32 @@ function pageTitle(parts) {
   if (!parts.length) return "Baobab Dental — Care that feels different";
   if (parts[0] === "services" && parts[1]) return `${services.find(service => service.slug === parts[1])?.name || "Treatment"} | Baobab Dental`;
   if (parts[0] === "clinics" && parts[1]) return `${branches.find(branch => branch.slug === parts[1])?.name || "Clinic"} | Baobab Dental`;
+  if (parts[0] === "journal" && parts[1]) return `${articles.find(article => article.slug === parts[1])?.title || "Article"} | Baobab Dental`;
   const titles = { services: "Treatments", clinics: "Our clinics", team: "Our people", about: "Our story", patients: "Patient guide", journal: "The journal", contact: "Contact", privacy: "Privacy", terms: "Terms", cookies: "Cookies", admin: "Admin demo" };
   return `${titles[parts[0]] || "Baobab Dental"} | Baobab Dental`;
+}
+
+function pageDescription(parts) {
+  const base = "Thoughtful, modern dental care for every generation in Perth, Australia. Explore Baobab Dental clinics, services and patient resources.";
+  if (!parts.length) return base;
+  if (parts[0] === "services" && parts[1]) { const item = services.find(s => s.slug === parts[1]); return item ? `${item.name} at Baobab Dental (demo). ${item.short}` : base; }
+  if (parts[0] === "clinics" && parts[1]) { const branch = branches.find(b => b.slug === parts[1]); return branch ? `${branch.name} clinic details, hours and directions (illustrative demo). ${branch.neighborhood}.` : base; }
+  if (parts[0] === "journal" && parts[1]) { const article = articles.find(a => a.slug === parts[1]); return article ? `${article.title} — general dental information from Baobab Dental (demo).` : base; }
+  const map = { services: "Explore dental treatments and what to expect at Baobab Dental (demo).", clinics: "Find Baobab Dental clinic locations around Perth (illustrative demo).", team: "Meet the Baobab Dental team (illustrative demo profiles).", about: "Learn about the Baobab Dental approach and clinic concept (demo).", patients: "Patient guide, first visit information, payments and FAQs (demo).", journal: "Dental health articles and everyday guidance from Baobab Dental (demo).", contact: "Contact Baobab Dental clinics in Perth (illustrative demo details).", privacy: "Privacy information for the Baobab Dental demonstration website.", terms: "Terms and demo information for the Baobab Dental website concept.", cookies: "Cookie information for the Baobab Dental demonstration website.", admin: "Internal-style demo dashboard with synthetic data. Not for public indexing." };
+  return map[parts[0]] || base;
+}
+
+function updateHeadMeta(parts) {
+  const title = pageTitle(parts);
+  const desc = pageDescription(parts);
+  document.title = title;
+  const setMeta = (selector, attr, value) => { const el = document.querySelector(selector); if (el) el.setAttribute(attr, value); };
+  setMeta('meta[name="description"]','content',desc);
+  setMeta('meta[property="og:title"]','content',title);
+  setMeta('meta[property="og:description"]','content',desc);
+  setMeta('meta[name="twitter:title"]','content',title);
+  setMeta('meta[name="twitter:description"]','content',desc);
+  setMeta('meta[name="robots"]','content', parts[0] === "admin" ? "noindex,nofollow,noarchive" : "index,follow,max-image-preview:large");
 }
 
 function updateActiveNav(page) {
@@ -673,7 +698,8 @@ function bindPageInteractions() {
     staffStatusFilter.addEventListener("change", updateStaffRows);
     addStaffButton.addEventListener("click", () => {
       const nextId = `STAFF-${String(demoStaff.length + 1).padStart(3, "0")}`;
-      demoStaff.push({ id: nextId, name: `Demo teammate ${demoStaff.length + 1}`, role: "Reception team", branch: branches[0].name, shift: "Not rostered", status: "Off shift" });
+      const nextName = additionalDemoStaffNames[demoStaff.length - 5] || `Demo teammate ${demoStaff.length + 1}`;
+      demoStaff.push({ id: nextId, name: nextName, role: "Reception team", branch: branches[0].name, shift: "Not rostered", status: "Off shift" });
       updateStaffRows();
     });
     updateStaffRows();

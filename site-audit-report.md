@@ -4,6 +4,18 @@
 
 This audit covers the static Perth clinic concept and its public pages and admin demo. It preserves the no-database requirement. The supplied audit attachment was treated as read-only.
 
+## Addendum (current pass)
+
+Structural/standards fixes applied in code during this pass:
+- Repaired widespread UTF-8 mojibake artifacts in HTML/JS/CSS/report content so punctuation/symbols render correctly (em dashes, bullets, arrows, quotes, currency minus, etc.).
+- Added core site metadata/assets: `robots`, `color-scheme`, Open Graph/Twitter tags, canonical link, favicon, web manifest, `robots.txt`, `sitemap.xml`, and `.gitignore`.
+- Implemented per-route SPA head updates (`document.title`, meta description, OG/Twitter, robots) in `app.js`; admin routes are marked `noindex,nofollow,noarchive`.
+- Hardened external links by adding `rel="noopener noreferrer"` to `target="_blank"` links.
+- Removed duplicate meta description and cleaned head structure in `index.html`.
+
+Automated checks (this pass): `node --check app.js` passed; no remaining target-blank links without `noopener`; no common mojibake marker patterns found in source files.
+Limitations remain unchanged: hash-routed SPA is not independently indexable without prerender/SSR, content/details are demo placeholders, and admin has no authentication (by design for static demo).
+
 Reviewed [index.html](./index.html), [app.js](./app.js), and [styles.css](./styles.css); exercised the running site in a browser; checked all listed routes at 320, 375, 430, 768, 1024, 1280, 1440, and 1920 CSS pixels; and sampled text contrast on the home page.
 
 This is a demo-quality audit, not a production security, clinical, legal, performance-lab, or screen-reader certification.

@@ -1,0 +1,13 @@
+﻿{
+  "name": "Baobab Dental (Demo)",
+  "short_name": "Baobab",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f6f5f0",
+  "theme_color": "#244b3a",
+  "description": "Demonstration website for Baobab Dental in Perth, Australia.",
+  "icons": [
+    { "src": "./favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}
