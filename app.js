@@ -60,7 +60,7 @@ const articles = [
   { slug: "making-checkups-a-habit", category: "Small habits, big difference", title: "Making regular check-ups part of your routine", read: "3 min read", image: "photo-1629909613654-28e377c37b09", intro: "A regular dental check-up is a chance to ask questions, spot changes and keep your care plan up to date.", content: ["How often you need a check-up depends on your oral health and personal risk factors. Your dentist can recommend an interval that suits you.", "Pairing a check-up with an existing routine, like a school holiday or annual health review, can make it easier to remember.", "Between visits, brush twice daily with fluoride toothpaste and clean between your teeth. Your dentist can help tailor these habits."] }
 ];
 
-const demoAppointments = [
+const Appointments = [
   { id: "BD-4811", time: "08:30", service: "General dentistry", branch: "Perth City", status: "Confirmed" },
   { id: "BD-4812", time: "09:15", service: "Cleaning & hygiene", branch: "Subiaco", status: "Confirmed" },
   { id: "BD-4813", time: "10:00", service: "Children's dentistry", branch: "South Perth", status: "Awaiting" },
@@ -70,7 +70,7 @@ const demoAppointments = [
   { id: "BD-4817", time: "15:30", service: "Cleaning & hygiene", branch: "Perth City", status: "Confirmed" }
 ];
 
-const demoStaff = [
+const Staff = [
   { id: "STAFF-001", name: "Dr. Sophie Bennett", role: "General dentist", branch: "Perth City", shift: "08:00–16:00", status: "On shift" },
   { id: "STAFF-002", name: "Dr. Liam Parker", role: "Restorative dentist", branch: "Subiaco", shift: "09:00–17:00", status: "On shift" },
   { id: "STAFF-003", name: "Dr. Emily Wilson", role: "Children's dentist", branch: "South Perth", shift: "09:00–15:00", status: "Off shift" },
@@ -79,7 +79,7 @@ const demoStaff = [
 ];
 const additionalDemoStaffNames = ["Alex Morgan", "Sam Mitchell", "Taylor Brooks", "Jordan Campbell", "Casey Walker"];
 
-const demoFinance = {
+const Finance = {
   month: {
     collected: 64280,
     outstanding: 5840,
@@ -127,7 +127,7 @@ const demoFinance = {
   }
 };
 
-const demoLedger = [
+const Ledger = [
   { id: "RCPT-4101", date: "13 Nov", description: "Card settlement", branch: "Perth City", amount: 1840, status: "Reconciled" },
   { id: "RCPT-4102", date: "12 Nov", description: "Health fund batch", branch: "Subiaco", amount: 2190, status: "Pending" },
   { id: "EXP-2201", date: "12 Nov", description: "Laboratory invoice", branch: "South Perth", amount: -640, status: "Scheduled" },
@@ -385,18 +385,18 @@ function financeBreakdown(items, className) {
 }
 
 function adminPage() {
-  const confirmedCount = demoAppointments.filter(appointment => appointment.status === "Confirmed").length;
-  const awaitingCount = demoAppointments.filter(appointment => appointment.status === "Awaiting").length;
-  const onShiftCount = demoStaff.filter(member => member.status === "On shift").length;
+  const confirmedCount = Appointments.filter(appointment => appointment.status === "Confirmed").length;
+  const awaitingCount = Appointments.filter(appointment => appointment.status === "Awaiting").length;
+  const onShiftCount = Staff.filter(member => member.status === "On shift").length;
   const branchesSummary = branches.map(branch => {
-    const count = demoAppointments.filter(appointment => appointment.branch === branch.name).length;
+    const count = Appointments.filter(appointment => appointment.branch === branch.name).length;
     return { ...branch, count };
   });
-  const servicesSummary = [...new Set(demoAppointments.map(appointment => appointment.service))].map(service => ({
+  const servicesSummary = [...new Set(Appointments.map(appointment => appointment.service))].map(service => ({
     name: service,
-    count: demoAppointments.filter(appointment => appointment.service === service).length
+    count: Appointments.filter(appointment => appointment.service === service).length
   }));
-  const rows = demoAppointments.map(appointment => `<tr data-admin-row data-branch="${appointment.branch}" data-status="${appointment.status}" data-id="${appointment.id.toLowerCase()}">
+  const rows = Appointments.map(appointment => `<tr data-admin-row data-branch="${appointment.branch}" data-status="${appointment.status}" data-id="${appointment.id.toLowerCase()}">
     <td class="admin-time">${appointment.time}</td>
     <td><span class="admin-appointment-id">${appointment.id}</span><span class="admin-row-subtitle">Demo appointment</span></td>
     <td>${appointment.service}</td>
