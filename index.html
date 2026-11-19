@@ -120,8 +120,15 @@
           <div><label for="booking-date">Preferred day</label><input id="booking-date" name="date" type="date" required /></div>
           <div><label for="booking-time">Time of day</label><select id="booking-time" name="time"><option>Any time</option><option>Morning</option><option>Afternoon</option></select></div>
         </div>
-        <button class="button button-dark booking-submit" type="submit">Preview confirmation <span aria-hidden="true">↗</span></button>
-        <p class="form-footnote">No name, phone number or health information requested. No appointment will be made.</p>
+        <label for="booking-name">Your name</label><input id="booking-name" name="name" autocomplete="name" maxlength="100" required />
+        <div class="form-pair">
+          <div><label for="booking-email">Email address</label><input id="booking-email" name="email" type="email" autocomplete="email" maxlength="254" required /></div>
+          <div><label for="booking-phone">Phone (optional)</label><input id="booking-phone" name="phone" type="tel" autocomplete="tel" maxlength="30" /></div>
+        </div>
+        <label class="booking-consent"><input id="booking-consent" name="consent" type="checkbox" required /> I agree that the clinic may contact me about this appointment request.</label>
+        <input name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="booking-honeypot" />
+        <button class="button button-dark booking-submit" type="submit">Send appointment request <span aria-hidden="true">↗</span></button>
+        <p class="form-footnote">This sends an appointment request, not a confirmed booking. Please do not include medical or sensitive health information.</p>
       </form>
       <div class="booking-result" id="booking-result" aria-live="polite" hidden></div>
     </dialog>

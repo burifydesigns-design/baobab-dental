@@ -761,6 +761,12 @@ function openBooking(serviceSlug = "") {
   else bookingDialog.setAttribute("open", "");
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[character]);
+}
+
 function setupBooking() {
   const branchSelect = document.querySelector("#booking-branch");
   const serviceSelect = document.querySelector("#booking-service");
@@ -769,19 +775,57 @@ function setupBooking() {
   const perthDateParts = new Intl.DateTimeFormat("en-AU", { timeZone: "Australia/Perth", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
   const localToday = `${perthDateParts.find(part => part.type === "year").value}-${perthDateParts.find(part => part.type === "month").value}-${perthDateParts.find(part => part.type === "day").value}`;
   document.querySelector("#booking-date").min = localToday;
-  bookingForm.addEventListener("submit", event => {
+  bookingForm.addEventListener("submit", async event => {
     event.preventDefault();
+    const submit = bookingForm.querySelector('[type="submit"]');
     const data = new FormData(bookingForm);
     const branch = branches.find(item => item.slug === data.get("branch"));
     const service = services.find(item => item.slug === data.get("service"));
     const date = data.get("date");
-    if (!branch || !service || !date) return;
+    if (!branch || !service || !date || !data.get("consent")) return;
+    if (data.get("website")) return;
+    const payload = {
+      name: String(data.get("name") || "").trim(),
+      email: String(data.get("email") || "").trim(),
+      phone: String(data.get("phone") || "").trim(),
+      branch: branch.name,
+      service: service.name,
+      preferredDate: date,
+      preferredTime: String(data.get("time") || "Any time"),
+      consent: data.get("consent") === "on"
+    };
     const prettyDate = new Date(`${date}T12:00:00+08:00`).toLocaleDateString("en-AU", { timeZone: "Australia/Perth", weekday: "long", day: "numeric", month: "long", year: "numeric" });
-    bookingResult.innerHTML = `<div class="confirmation-icon">✓</div><span class="eyebrow">Preview only · Nothing has been booked</span><h3 tabindex="-1">Your next step, in ${branch.name}.</h3><p>You've explored a ${service.name.toLowerCase()} visit for ${prettyDate.toLowerCase()} (${data.get("time").toLowerCase()}). No appointment request was sent or saved.</p><button class="button button-dark" type="button" id="booking-reset">Explore another option</button>`;
-    bookingForm.hidden = true;
-    bookingResult.hidden = false;
-    bookingResult.querySelector("h3").focus();
-    document.querySelector("#booking-reset").addEventListener("click", () => openBooking());
+    submit.disabled = true;
+    submit.textContent = "Sending request…";
+    try {
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "The request could not be submitted.");
+      bookingResult.innerHTML = `<div class="confirmation-icon">✓</div><span class="eyebrow">Request received · Not yet confirmed</span><h3 tabindex="-1">Thank you, ${escapeHtml(payload.name)}.</h3><p>Your request for ${escapeHtml(service.name.toLowerCase())} at ${escapeHtml(branch.name)} on ${escapeHtml(prettyDate.toLowerCase())} has been received. The clinic must contact you to confirm availability.</p><button class="button button-dark" type="button" id="booking-reset">Make another request</button>`;
+      bookingForm.hidden = true;
+      bookingResult.hidden = false;
+      bookingResult.querySelector("h3").focus();
+      document.querySelector("#booking-reset").addEventListener("click", () => openBooking());
+    } catch (error) {
+      const message = error.message.includes("Failed to fetch") || error.message.includes("Unexpected token") || error.message.includes("not found")
+        ? "Online requests are not connected in this preview yet. No personal information was saved. Please contact the clinic directly."
+        : error.message;
+      bookingResult.innerHTML = `<div class="confirmation-icon">i</div><span class="eyebrow">Preview mode</span><h3 tabindex="-1">Request not submitted</h3><p>${escapeHtml(message)}</p><button class="button button-dark" type="button" id="booking-reset">Return to request form</button>`;
+      bookingResult.hidden = false;
+      bookingResult.querySelector("h3").focus();
+      document.querySelector("#booking-reset").addEventListener("click", () => {
+        bookingResult.hidden = true;
+        bookingForm.hidden = false;
+      });
+    } finally {
+      submit.disabled = false;
+      submit.innerHTML = 'Send appointment request <span aria-hidden="true">↗</span>';
+    }
   });
 }
 
