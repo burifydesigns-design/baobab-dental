@@ -26,7 +26,7 @@ module.exports = async function handler(req, res) {
       return sendJson(res, 401, { error: "Email or password is incorrect." });
     }
     setSessionCookie(res, createSession(adminEmail));
-    await getDb().then(db => db.collection("admin_audit_logs").insertOne({ action: "login_success", email: adminEmail, createdAt: new Date() }));
+    await getDb().then(db => db.collection("admin_audit_logs").insertOne({ action: "login_success", email: adminEmail, createdAt: new Date() })).catch(error => console.error("Admin audit write failed:", error.message));
     return sendJson(res, 200, { ok: true, email: adminEmail });
   } catch (error) {
     console.error("Admin login error:", error.message);
