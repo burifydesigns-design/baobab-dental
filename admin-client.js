@@ -102,6 +102,13 @@
     const awaiting = currentAppointments.filter(item => item.status === "new" || item.status === "contacted").length;
     const metric = root.querySelectorAll(".admin-metric-card strong");
     if (metric[0]) metric[0].textContent = String(currentAppointments.length);
+    const firstMetricCard = root.querySelector(".admin-metric-card");
+    if (firstMetricCard) {
+      const metricLabel = firstMetricCard.querySelector(".admin-metric-label");
+      const metricNote = firstMetricCard.querySelector("small");
+      if (metricLabel) metricLabel.textContent = "Requests in inbox";
+      if (metricNote) metricNote.textContent = "Latest 100 MongoDB records";
+    }
     const confirmedNode = root.querySelector("#admin-confirmed-count");
     const awaitingNode = root.querySelector("#admin-awaiting-count");
     if (confirmedNode) confirmedNode.textContent = String(confirmed);
