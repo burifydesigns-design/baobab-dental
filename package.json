@@ -1,14 +1,5 @@
-<<<<<<< HEAD
-﻿{
-  "name": "baobab-dental",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Baobab Dental static demonstration website (Perth, Australia).",
-  "scripts": {
-    "check": "node --check js/app.js"
-=======
 {
-  "name": "baobab-dental-demo",
+  "name": "baobab-dental",
   "version": "1.0.0",
   "private": true,
   "description": "Baobab Dental demonstration website with MongoDB-backed appointment enquiries and protected admin API",
@@ -16,10 +7,10 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "node --check app.js && node --check api/appointments.js && node --check api/admin/login.js && node --check api/admin/session.js && node --check api/admin/logout.js && node --check api/admin/appointments.js && node --check lib/http.js && node --check lib/auth.js && node --check lib/mongodb.js && node --check admin-client.js"
->>>>>>> 070cd43f5839844e71e84da6293a64589ee6dd53
+    "check": "node --check js/app.js && node --check api/appointments.js && node --check api/admin/login.js && node --check api/admin/session.js && node --check api/admin/logout.js && node --check api/admin/appointments.js && node --check lib/http.js && node --check lib/auth.js && node --check lib/mongodb.js && node --check admin-client.js"
   },
   "dependencies": {
+    "mongodb": "^6.22.0",
     "vercel": "^65.2.0"
   }
 }
