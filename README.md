@@ -2,6 +2,10 @@
 
 Static site and API functions for the Baobab Dental demonstration. The public form creates appointment **requests**, not confirmed bookings. The admin area reads and updates those requests in MongoDB.
 
+## Requirements
+
+- Node.js 22.12.0 or newer for the current Wrangler toolchain.
+
 ## Cloudflare Pages setup
 
 - Connect this repository to Cloudflare Pages.
