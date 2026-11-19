@@ -132,7 +132,22 @@
     try { await loadAppointments(); }
     catch (error) {
       const banner = root.querySelector(".admin-sample-banner");
-      if (banner) banner.innerHTML = '<span>!</span><p><strong>Appointment data unavailable</strong> · ' + escapeHtml(error.message) + ' The sample dashboard is not a substitute for live records.</p><span class="admin-sample-tag">OFFLINE</span>';
+      if (banner) banner.innerHTML = '<span>!</span><p><strong>Appointment data unavailable</strong> · ' + escapeHtml(error.message) + ' No sample appointment rows are shown in place of live records.</p><span class="admin-sample-tag">OFFLINE</span>';
+      const tbody = root.querySelector(".admin-table tbody");
+      if (tbody) tbody.innerHTML = '<tr><td colspan="5">Live appointment records could not be loaded. Check the MongoDB connection and try again.</td></tr>';
+      const empty = root.querySelector("#admin-empty");
+      if (empty) { empty.textContent = "Live appointment records are unavailable."; empty.hidden = false; }
+      const count = root.querySelector("#admin-visible-count");
+      if (count) count.textContent = "0";
+      const footer = root.querySelector("#admin-appointments .admin-table-footer");
+      if (footer) footer.innerHTML = "<span>No live records loaded</span><span>MongoDB connection unavailable</span>";
+      const firstMetric = root.querySelector(".admin-metric-card");
+      if (firstMetric) {
+        const value = firstMetric.querySelector("strong");
+        const note = firstMetric.querySelector("small");
+        if (value) value.textContent = "—";
+        if (note) note.textContent = "Database unavailable";
+      }
     }
     const tbody = root.querySelector(".admin-table tbody");
     if (tbody && !tbody.dataset.liveBound) {
