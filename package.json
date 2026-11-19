@@ -7,7 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "node --check app.js && node --check api/appointments.js && node --check api/admin/login.js && node --check api/admin/appointments.js"
+    "check": "node --check app.js && node --check api/appointments.js && node --check api/admin/login.js && node --check api/admin/session.js && node --check api/admin/logout.js && node --check api/admin/appointments.js && node --check lib/http.js && node --check lib/auth.js && node --check lib/mongodb.js"
   },
   "dependencies": {
     "mongodb": "^6.20.0",
