@@ -13,10 +13,10 @@ Structural/standards fixes applied in code during this pass:
 - Hardened external links by adding `rel="noopener noreferrer"` to `target="_blank"` links.
 - Removed duplicate meta description and cleaned head structure in `index.html`.
 
-Automated checks (this pass): `node --check app.js` passed; no remaining target-blank links without `noopener`; no common mojibake marker patterns found in source files.
+Automated checks (this pass): `node --check js/app.js` passed; no remaining target-blank links without `noopener`; no common mojibake marker patterns found in source files.
 Limitations remain unchanged: hash-routed SPA is not independently indexable without prerender/SSR, content/details are demo placeholders, and admin has no authentication (by design for static demo).
 
-Reviewed [index.html](./index.html), [app.js](./app.js), and [styles.css](./styles.css); exercised the running site in a browser; checked all listed routes at 320, 375, 430, 768, 1024, 1280, 1440, and 1920 CSS pixels; and sampled text contrast on the home page.
+Reviewed [index.html](../index.html), [app.js](../js/app.js), and [styles.css](../css/styles.css); exercised the running site in a browser; checked all listed routes at 320, 375, 430, 768, 1024, 1280, 1440, and 1920 CSS pixels; and sampled text contrast on the home page.
 
 This is a demo-quality audit, not a production security, clinical, legal, performance-lab, or screen-reader certification.
 

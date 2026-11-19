@@ -1,4 +1,11 @@
-{
+﻿{
+  "name": "baobab-dental",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Baobab Dental static demonstration website (Perth, Australia).",
+  "scripts": {
+    "check": "node --check js/app.js"
+  },
   "dependencies": {
     "vercel": "^65.2.0"
   }

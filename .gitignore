@@ -1,4 +1,15 @@
 ﻿node_modules/
-*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 .DS_Store
 Thumbs.db
+*.log
+.env
+.env.*
+!.env.example
+.vercel
+coverage/
+dist/
+build/
