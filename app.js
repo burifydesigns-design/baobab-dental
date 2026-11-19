@@ -313,7 +313,7 @@ function legalPage(which) {
       title: "Your privacy matters.",
       intro: "This website is a static demonstration. It does not connect to a database, transmit booking details or collect health information.",
       sections: [
-        ["Information this demo handles", "The booking preview uses only the choices you make in your browser tab (clinic, service, preferred day and time). It does not ask for your name, phone number or health details. The preview is not sent to Baobab Dental and is not stored."],
+        ["Information this demo handles", "When the MongoDB appointment API is configured, the appointment request form collects your name, email, optional phone number, chosen clinic and service, preferred date and time, plus your contact consent. These details are stored in the Baobab Dental MongoDB database so an authorised clinic administrator can follow up. If the API is not configured, the request is not saved. Do not submit medical history, symptoms or other sensitive health information through this demo."],
         ["External links and images", "This demo loads photography from Unsplash and provides optional links to WhatsApp and Google Maps. Those services have their own privacy practices. Opening an external link may share information with that provider."],
         ["Cookies and analytics", "No analytics, advertising pixels or tracking cookies are configured in this demonstration. The dismissible site notice is kept only in the current page view."],
         ["A real clinic website", "Before a live launch, replace this demo notice with a reviewed privacy policy describing the actual data controller, purposes, lawful basis, retention, processors, security, data-subject rights and contact details, in line with Australia's Privacy Act 1988, the Australian Privacy Principles and applicable Western Australian requirements."]
@@ -520,7 +520,7 @@ function adminPage() {
             <div class="admin-table-footer"><span>Showing <strong id="admin-ledger-visible">${demoLedger.length}</strong> synthetic entries</span><span>Status changes are temporary and reset on refresh.</span></div>
           </article>
         </section>
-        <footer class="admin-footer"><span>Baobab Dental · Admin interface concept</span><span>Illustrative data only · No database or patient records</span></footer>
+        <footer class="admin-footer"><span>Baobab Dental · Admin interface concept</span><span>Sample dashboard figures · Appointment requests are stored separately when MongoDB is configured</span></footer>
       </div>
     </div>`;
 }
