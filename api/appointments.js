@@ -1,5 +1,5 @@
 const { getDb } = require("../lib/mongodb");
-const { sendJson, readJson } = require("../lib/http");
+const { sendJson, readJson, isAllowedOrigin } = require("../lib/http");
 
 const allowedBranches = new Set(["Perth City", "Subiaco", "South Perth"]);
 const allowedServices = new Set(["General dentistry", "Cleaning & hygiene", "Tooth-coloured fillings", "Root canal care", "Tooth extractions", "Braces & clear aligners", "Teeth whitening", "Dental implants", "Veneers", "Children's dentistry", "Emergency dental care"]);
@@ -9,6 +9,7 @@ module.exports = async function handler(req, res) {
     res.setHeader("Allow", "POST");
     return sendJson(res, 405, { error: "Method not allowed." });
   }
+  if (!isAllowedOrigin(req)) return sendJson(res, 403, { error: "Request origin is not allowed." });
   try {
     const body = await readJson(req);
     if (body.website) return sendJson(res, 200, { ok: true });
@@ -35,6 +36,7 @@ module.exports = async function handler(req, res) {
     return sendJson(res, 201, { ok: true, requestId: result.insertedId.toString(), message: "Your request was received. The clinic must confirm availability." });
   } catch (error) {
     console.error("Appointment request error:", error.message);
-    return sendJson(res, error.message === "Invalid JSON body." ? 400 : 503, { error: error.message === "Invalid JSON body." ? error.message : "Appointment requests are temporarily unavailable. Please contact the clinic directly." });
+    const badRequest = ["Invalid JSON body.", "Request body too large."].includes(error.message);
+    return sendJson(res, badRequest ? 400 : 503, { error: badRequest ? error.message : "Appointment requests are temporarily unavailable. Please contact the clinic directly." });
   }
 };
