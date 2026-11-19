@@ -1,0 +1,30 @@
+.booking-consent {
+  display: flex !important;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 14px 0 18px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.booking-consent input {
+  width: 17px !important;
+  min-width: 17px;
+  height: 17px;
+  margin: 2px 0 0;
+  accent-color: var(--forest);
+}
+.booking-honeypot {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+.booking-submit:disabled {
+  opacity: .65;
+  cursor: wait;
+}

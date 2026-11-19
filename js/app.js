@@ -313,7 +313,7 @@ function legalPage(which) {
       title: "Your privacy matters.",
       intro: "This website is a static demonstration. It does not connect to a database, transmit booking details or collect health information.",
       sections: [
-        ["Information this demo handles", "The booking preview uses only the choices you make in your browser tab (clinic, service, preferred day and time). It does not ask for your name, phone number or health details. The preview is not sent to Baobab Dental and is not stored."],
+        ["Information this demo handles", "When the MongoDB appointment API is configured, the appointment request form collects your name, email, optional phone number, chosen clinic and service, preferred date and time, plus your contact consent. These details are stored in the Baobab Dental MongoDB database so an authorised clinic administrator can follow up. If the API is not configured, the request is not saved. Do not submit medical history, symptoms or other sensitive health information through this demo."],
         ["External links and images", "This demo loads photography from Unsplash and provides optional links to WhatsApp and Google Maps. Those services have their own privacy practices. Opening an external link may share information with that provider."],
         ["Cookies and analytics", "No analytics, advertising pixels or tracking cookies are configured in this demonstration. The dismissible site notice is kept only in the current page view."],
         ["A real clinic website", "Before a live launch, replace this demo notice with a reviewed privacy policy describing the actual data controller, purposes, lawful basis, retention, processors, security, data-subject rights and contact details, in line with Australia's Privacy Act 1988, the Australian Privacy Principles and applicable Western Australian requirements."]
@@ -520,7 +520,7 @@ function adminPage() {
             <div class="admin-table-footer"><span>Showing <strong id="admin-ledger-visible">${demoLedger.length}</strong> synthetic entries</span><span>Status changes are temporary and reset on refresh.</span></div>
           </article>
         </section>
-        <footer class="admin-footer"><span>Baobab Dental · Admin interface concept</span><span>Illustrative data only · No database or patient records</span></footer>
+        <footer class="admin-footer"><span>Baobab Dental · Admin interface concept</span><span>Sample dashboard figures · Appointment requests are stored separately when MongoDB is configured</span></footer>
       </div>
     </div>`;
 }
@@ -761,6 +761,12 @@ function openBooking(serviceSlug = "") {
   else bookingDialog.setAttribute("open", "");
 }
 
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+  })[character]);
+}
+
 function setupBooking() {
   const branchSelect = document.querySelector("#booking-branch");
   const serviceSelect = document.querySelector("#booking-service");
@@ -769,19 +775,57 @@ function setupBooking() {
   const perthDateParts = new Intl.DateTimeFormat("en-AU", { timeZone: "Australia/Perth", year: "numeric", month: "2-digit", day: "2-digit" }).formatToParts(new Date());
   const localToday = `${perthDateParts.find(part => part.type === "year").value}-${perthDateParts.find(part => part.type === "month").value}-${perthDateParts.find(part => part.type === "day").value}`;
   document.querySelector("#booking-date").min = localToday;
-  bookingForm.addEventListener("submit", event => {
+  bookingForm.addEventListener("submit", async event => {
     event.preventDefault();
+    const submit = bookingForm.querySelector('[type="submit"]');
     const data = new FormData(bookingForm);
     const branch = branches.find(item => item.slug === data.get("branch"));
     const service = services.find(item => item.slug === data.get("service"));
     const date = data.get("date");
-    if (!branch || !service || !date) return;
+    if (!branch || !service || !date || !data.get("consent")) return;
+    if (data.get("website")) return;
+    const payload = {
+      name: String(data.get("name") || "").trim(),
+      email: String(data.get("email") || "").trim(),
+      phone: String(data.get("phone") || "").trim(),
+      branch: branch.name,
+      service: service.name,
+      preferredDate: date,
+      preferredTime: String(data.get("time") || "Any time"),
+      consent: data.get("consent") === "on"
+    };
     const prettyDate = new Date(`${date}T12:00:00+08:00`).toLocaleDateString("en-AU", { timeZone: "Australia/Perth", weekday: "long", day: "numeric", month: "long", year: "numeric" });
-    bookingResult.innerHTML = `<div class="confirmation-icon">✓</div><span class="eyebrow">Preview only · Nothing has been booked</span><h3 tabindex="-1">Your next step, in ${branch.name}.</h3><p>You've explored a ${service.name.toLowerCase()} visit for ${prettyDate.toLowerCase()} (${data.get("time").toLowerCase()}). No appointment request was sent or saved.</p><button class="button button-dark" type="button" id="booking-reset">Explore another option</button>`;
-    bookingForm.hidden = true;
-    bookingResult.hidden = false;
-    bookingResult.querySelector("h3").focus();
-    document.querySelector("#booking-reset").addEventListener("click", () => openBooking());
+    submit.disabled = true;
+    submit.textContent = "Sending request…";
+    try {
+      const response = await fetch("/api/appointments", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify(payload)
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || "The request could not be submitted.");
+      bookingResult.innerHTML = `<div class="confirmation-icon">✓</div><span class="eyebrow">Request received · Not yet confirmed</span><h3 tabindex="-1">Thank you, ${escapeHtml(payload.name)}.</h3><p>Your request for ${escapeHtml(service.name.toLowerCase())} at ${escapeHtml(branch.name)} on ${escapeHtml(prettyDate.toLowerCase())} has been received. The clinic must contact you to confirm availability.</p><button class="button button-dark" type="button" id="booking-reset">Make another request</button>`;
+      bookingForm.hidden = true;
+      bookingResult.hidden = false;
+      bookingResult.querySelector("h3").focus();
+      document.querySelector("#booking-reset").addEventListener("click", () => openBooking());
+    } catch (error) {
+      const message = error.message.includes("Failed to fetch") || error.message.includes("Unexpected token") || error.message.includes("not found")
+        ? "Online requests are not connected in this preview yet. No personal information was saved. Please contact the clinic directly."
+        : error.message;
+      bookingResult.innerHTML = `<div class="confirmation-icon">i</div><span class="eyebrow">Preview mode</span><h3 tabindex="-1">Request not submitted</h3><p>${escapeHtml(message)}</p><button class="button button-dark" type="button" id="booking-reset">Return to request form</button>`;
+      bookingResult.hidden = false;
+      bookingResult.querySelector("h3").focus();
+      document.querySelector("#booking-reset").addEventListener("click", () => {
+        bookingResult.hidden = true;
+        bookingForm.hidden = false;
+      });
+    } finally {
+      submit.disabled = false;
+      submit.innerHTML = 'Send appointment request <span aria-hidden="true">↗</span>';
+    }
   });
 }
 

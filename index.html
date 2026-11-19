@@ -102,7 +102,7 @@
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 11.7a8.4 8.4 0 0 1-12.4 7.4L3.5 20l.9-4.4a8.4 8.4 0 1 1 16.1-3.9Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.8 8.2c.2-.5.4-.5.7-.5h.5c.2 0 .4.1.5.4l.7 1.6c.1.2.1.4 0 .6l-.5.6c-.2.2-.2.3-.1.5.3.6.8 1.1 1.4 1.5.5.3.9.5 1.2.6.2.1.4.1.5-.1l.7-.8c.2-.2.4-.2.6-.1l1.5.7c.2.1.4.2.4.4s-.1 1-.6 1.4-1.1.6-1.8.5c-.7-.1-1.6-.4-2.7-1-1.3-.7-2.3-1.7-3-2.9-.7-1.1-.9-1.9-.9-2.5 0-.5.3-1 .9-1.4Z" fill="currentColor"/></svg>
     </a>
     <div class="cookie-note" id="cookie-note" role="status">
-      <span><strong>A note on this demo.</strong> It doesn’t use tracking cookies or save form entries.</span>
+      <span><strong>A note on this demo.</strong> It doesn’t use tracking cookies. If MongoDB is configured, appointment requests are stored for clinic follow-up.</span>
       <button type="button" id="cookie-dismiss" aria-label="Dismiss note">Got it</button>
     </div>
 
@@ -110,7 +110,7 @@
       <button class="dialog-close" type="button" aria-label="Close booking dialog">×</button>
       <div class="booking-kicker"><span class="eyebrow-dot"></span> A simple first step</div>
       <h2 id="booking-title">Let’s find a time.</h2>
-      <p class="dialog-intro">Choose a few preferences to preview the booking experience. This demo does not send or save a request.</p>
+      <p class="dialog-intro">Choose your preferences and send an appointment request. If the database is connected, the clinic team can review it and contact you to confirm availability.</p>
       <form id="booking-form">
         <label for="booking-branch">Clinic</label>
         <select id="booking-branch" name="branch" required></select>
@@ -120,8 +120,15 @@
           <div><label for="booking-date">Preferred day</label><input id="booking-date" name="date" type="date" required /></div>
           <div><label for="booking-time">Time of day</label><select id="booking-time" name="time"><option>Any time</option><option>Morning</option><option>Afternoon</option></select></div>
         </div>
-        <button class="button button-dark booking-submit" type="submit">Preview confirmation <span aria-hidden="true">↗</span></button>
-        <p class="form-footnote">No name, phone number or health information requested. No appointment will be made.</p>
+        <label for="booking-name">Your name</label><input id="booking-name" name="name" autocomplete="name" maxlength="100" required />
+        <div class="form-pair">
+          <div><label for="booking-email">Email address</label><input id="booking-email" name="email" type="email" autocomplete="email" maxlength="254" required /></div>
+          <div><label for="booking-phone">Phone (optional)</label><input id="booking-phone" name="phone" type="tel" autocomplete="tel" maxlength="30" /></div>
+        </div>
+        <label class="booking-consent"><input id="booking-consent" name="consent" type="checkbox" required /> I agree that the clinic may contact me about this appointment request.</label>
+        <input name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="booking-honeypot" />
+        <button class="button button-dark booking-submit" type="submit">Send appointment request <span aria-hidden="true">↗</span></button>
+        <p class="form-footnote">This sends an appointment request, not a confirmed booking. Please do not include medical or sensitive health information.</p>
       </form>
       <div class="booking-result" id="booking-result" aria-live="polite" hidden></div>
     </dialog>
