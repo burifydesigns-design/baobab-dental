@@ -47,6 +47,30 @@ The function code opens one short-lived MongoClient per invocation and closes it
 
 The app creates indexes for appointment chronology/status, audit chronology, and TTL cleanup of login-attempt records.
 
+## MongoDB database initialization
+
+The database is named baobab_dental by default. Initialize it after creating the Atlas database user and adding the approved network access rule:
+
+- appointment_requests: validated appointment enquiry records; indexed by creation date, status/date, and email/date.
+- admin_audit_logs: admin sign-in and appointment-status audit events; indexed by creation date and action/date.
+- admin_login_attempts: temporary login throttling records; indexed with a 15-minute TTL expiry.
+
+The initializer creates missing collections, applies strict document validators to existing collections, and creates indexes idempotently. It does not drop collections, delete records, or create sample patient/admin accounts. Review existing records before applying stricter validators to a database that already contains data.
+
+Run it from a trusted local terminal after setting MONGODB_URI and optionally MONGODB_DB:
+
+    export MONGODB_URI='your-private-atlas-connection-string'
+    export MONGODB_DB='baobab_dental'
+    npm run db:init
+
+For PowerShell:
+
+    $env:MONGODB_URI = 'your-private-atlas-connection-string'
+    $env:MONGODB_DB = 'baobab_dental'
+    npm run db:init
+
+Do not put the URI in source code or paste it into chat. The app also ensures the operational indexes when it connects, but db:init is the explicit schema-and-index setup step.
+
 ## API routes
 
 - `POST /api/appointments` — validates consent and stores a request as `new`.

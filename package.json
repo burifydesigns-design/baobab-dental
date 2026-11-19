@@ -7,8 +7,9 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "check": "node --check app.js && node --check functions/api/appointments.js && node --check functions/api/admin/login.js && node --check functions/api/admin/session.js && node --check functions/api/admin/logout.js && node --check functions/api/admin/appointments.js && node --check lib/http.js && node --check lib/auth.js && node --check lib/mongodb.js && node --check admin-client.js && wrangler pages functions build functions --project-directory . --compatibility-date 2026-11-19 --compatibility-flag nodejs_compat --outdir .wrangler/functions-build",
-    "dev:cf": "wrangler pages dev ."
+    "check": "node --check app.js && node --check functions/api/appointments.js && node --check functions/api/admin/login.js && node --check functions/api/admin/session.js && node --check functions/api/admin/logout.js && node --check functions/api/admin/appointments.js && node --check lib/http.js && node --check lib/auth.js && node --check lib/mongodb.js && node --check admin-client.js && wrangler pages functions build functions --project-directory . --compatibility-date 2026-11-19 --compatibility-flag nodejs_compat --outdir .wrangler/functions-build && node --check lib/database-schema.js && node --check scripts/init-database.mjs",
+    "dev:cf": "wrangler pages dev .",
+    "db:init": "node scripts/init-database.mjs"
   },
   "dependencies": {
     "mongodb": "^6.20.0"
