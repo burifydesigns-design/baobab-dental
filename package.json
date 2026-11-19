@@ -10,6 +10,7 @@
     "check": "node --check app.js && node --check api/appointments.js && node --check api/admin/login.js && node --check api/admin/appointments.js"
   },
   "dependencies": {
-    "mongodb": "^6.20.0"
+    "mongodb": "^6.20.0",
+    "vercel": "^65.9.0"
   }
 }
