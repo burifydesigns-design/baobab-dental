@@ -1,43 +1,44 @@
 # MongoDB-backed Baobab Dental demo
 
-This branch adds a server-side MongoDB API for appointment requests and protected admin appointment access. It does not connect to or provision a MongoDB cluster automatically.
+This branch includes the public appointment-request API and an authenticated admin UI that reads and updates real appointment-request records from MongoDB. It does not provision an Atlas cluster or configure Vercel secrets automatically.
 
 ## What is connected in code
 
 - `POST /api/appointments`: validates a public appointment enquiry and stores it in MongoDB as `status: new`. It is a request, not a confirmed booking.
-- `POST /api/admin/login`: verifies the configured admin email and scrypt password hash, then issues an eight-hour HttpOnly, Secure, SameSite=Strict cookie.
+- `POST /api/admin/login`: verifies the configured admin email and scrypt password hash, applies a per-IP failed-attempt limit, then issues an eight-hour HttpOnly, Secure, SameSite=Strict cookie.
 - `GET /api/admin/session`: reports whether the cookie is valid.
 - `POST /api/admin/logout`: clears the session cookie.
 - `GET /api/admin/appointments`: returns up to 100 requests to an authenticated admin.
 - `PATCH /api/admin/appointments`: changes a request status and writes an admin audit record.
+- The admin page now requires sign-in before showing its dashboard. The appointment table uses live MongoDB records; staff, finance, clinic and content panels remain illustrative sample data.
 
-The current admin dashboard UI still contains synthetic sample data. These API endpoints are a protected backend foundation; a subsequent UI pass must replace the sample appointment table with the authenticated API data before this can be described as a live admin system.
+## 1. Configure MongoDB Atlas
 
-## 1. Create MongoDB Atlas database
-
-1. Create a MongoDB Atlas project and cluster.
+1. In Atlas, open the project and create or select a running cluster.
 2. Create a dedicated database user with a strong unique password. Grant only read/write access to the `baobab_dental` database.
-3. Configure Network Access for the Vercel deployment. Prefer the narrowest supported allowlist; do not leave broad access enabled as a permanent production setting.
-4. Copy the Atlas connection string and set the database name to `baobab_dental`.
+3. In Network Access, permit the Vercel deployment to reach the cluster. Use the narrowest supported network rule for your deployment and review it before production.
+4. Open the cluster's **Connect** flow, choose **Drivers → Node.js**, and copy the connection string.
+5. Replace the password placeholder locally and URL-encode any special characters in the username/password as required by MongoDB's connection-string rules. Keep the complete URI private.
 
-Collections are created on first API use:
+The app uses database `baobab_dental` by default and creates these collections/indexes on first connection:
 - `appointment_requests`
 - `admin_audit_logs`
+- `admin_login_attempts` (15-minute TTL for failed-login throttling)
 
-Indexes are created by the API on first database connection.
+The Node.js driver reuses one MongoClient connection per warm serverless process and uses a small pool. See the [MongoDB Node.js connection guide](https://www.mongodb.com/docs/drivers/node/current/connect/connection-targets/) and [connection-pool guidance](https://www.mongodb.com/docs/drivers/node/current/connect/connection-options/connection-pools/).
 
 ## 2. Configure Vercel environment variables
 
-Add these to the Vercel project for the correct environments (Preview and Production as appropriate):
+Add the following as **server-side** environment variables to the Baobab Dental Vercel project. Set Preview first; add Production only after the preview passes verification.
 
-- `MONGODB_URI`: Atlas connection string.
+- `MONGODB_URI`: full Atlas connection string.
 - `MONGODB_DB`: `baobab_dental`.
 - `ADMIN_EMAIL`: the admin sign-in email.
 - `ADMIN_PASSWORD_HASH`: scrypt hash in `salt:hex` format.
 - `SESSION_SECRET`: at least 32 random characters.
-- `APP_ORIGIN`: the expected deployment origin (reserved for origin validation in a later hardening pass).
+- `APP_ORIGIN`: exact preview origin for the preview environment (for example, the exact Vercel preview hostname); use the production domain only in Production.
 
-Never put these values in frontend code, committed production environment files, or variables prefixed with `VITE_` / `NEXT_PUBLIC_`.
+Never put these values in frontend code, committed environment files, or variables prefixed with `VITE_` / `NEXT_PUBLIC_`. Do not paste the URI, password, or session secret into chat or GitHub issues.
 
 Generate a password hash and session secret locally:
 
@@ -46,23 +47,25 @@ node -e "const c=require('node:crypto');const s=c.randomBytes(16).toString('hex'
 node -e "console.log(require('node:crypto').randomBytes(48).toString('base64url'))"
 ```
 
-Do not reuse the example password. Do not send credentials in chat or commit them to GitHub.
+Use a new, unique password; do not reuse the example text.
 
-## 3. Deploy and verify
+## 3. Deploy and verify the Preview
 
-After setting variables, deploy the branch as a Vercel Preview. Verify:
+After the environment variables are saved, redeploy the branch Preview so the functions receive the new values. Verify:
 
-1. Without MongoDB variables, the public form must fail safely and clearly state that nothing was saved.
+1. Without MongoDB variables, the public form fails safely and does not claim a request was saved.
 2. With valid Atlas credentials, a consented appointment request returns HTTP 201 and appears in `appointment_requests` with status `new`.
-3. Invalid email, invalid branch/service, past date, missing consent and oversized payloads are rejected.
-4. Admin API requests without a valid cookie return HTTP 401.
-5. Valid admin login sets an HttpOnly cookie; session check succeeds; logout invalidates it.
-6. Admin status changes are recorded in `admin_audit_logs`.
+3. Invalid email, invalid branch/service, past date, missing consent, invalid JSON and oversized payloads are rejected.
+4. Admin access prompts for sign-in. Wrong credentials return 401; more than five attempts from the same client within the 15-minute window return 429.
+5. Admin API requests without a valid cookie return HTTP 401.
+6. Valid admin login sets an HttpOnly cookie; session check succeeds; logout invalidates it.
+7. The admin appointment table displays submitted requests and status changes persist to MongoDB with audit records.
+8. A request is clearly labelled as pending until clinic staff separately confirm availability.
 
-## Important production gaps
+## Important boundaries before real clinic use
 
-- This demo does not create confirmed appointments, check calendar availability, send email/SMS, or sync with practice-management software.
+- This demo does not confirm calendar availability, send email/SMS, or sync with practice-management software.
+- Staff, finance, clinic and content panels still show synthetic demo data. They must not be presented as live business records.
 - The public enquiry form collects contact details. Before real use, replace demo privacy copy with a clinic-reviewed privacy notice and retention policy, and confirm applicable Australian privacy obligations.
-- Add a durable rate limiter/WAF, CSRF/origin checks, monitoring, backup/restore testing, and account recovery before production.
-- The current dashboard is still a demo UI; do not enter or store real patient data until the UI is wired to the protected endpoints and the clinic's privacy/security requirements are reviewed.
-- No clinical notes, symptoms, diagnoses or health history are collected by this form.
+- Add monitoring, backup/restore testing, formal retention/deletion workflows and an independent security review before storing real patient data.
+- Do not enter clinical notes, symptoms, diagnoses or health history. The form is deliberately limited to contact details and appointment preferences.
